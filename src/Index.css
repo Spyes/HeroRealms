@@ -1,0 +1,23 @@
+.Card {
+  width: 120px;
+  height: 165px;
+  border: 1px solid black;
+}
+
+.Card > img {
+  width: 120px;
+  height: 165px;
+}
+
+.Cards > .content {
+  display: flex;
+  height: 165px;
+}
+
+.Deck > .content {
+  height: 165px;
+}
+
+.Deck > .content > img {
+  height: 165px;
+}
