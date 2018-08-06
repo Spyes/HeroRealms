@@ -16,6 +16,7 @@ type faction =
 type ability =
   | AddCoins(int)
   | AddCombat(int)
+  | AddHealth(int)
   | Expend(ability)
   | And(list(ability))
   | Or(list(ability));
@@ -30,6 +31,7 @@ type card = {
   primaryAbility: option(ability),
   allyAbility: option(ability),
   image: string,
+  expended: bool,
 };
 
 let make = (~card: card, ~onClick=?, _children) => {
@@ -38,9 +40,12 @@ let make = (~card: card, ~onClick=?, _children) => {
     | Some(func) => func(card)
     | None => ()
     };
+  let className = card.expended ? "expended" : "";
   {
     ...component,
     render: _self =>
-      <div className="Card" onClick=click> <img src=card.image /> </div>,
+      <div className="Card" onClick=click>
+        <img src=card.image className />
+      </div>,
   };
 };

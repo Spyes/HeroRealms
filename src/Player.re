@@ -11,8 +11,9 @@ type player = {
   mutable health: int,
 };
 
-let make = (~player: player, ~onClickHand, _children) => {
-  let onClick = card => onClickHand(~card, ~player);
+let make = (~player: player, ~onClickInHand, ~onClickInField, _children) => {
+  let onClickHand = card => onClickInHand(~card, ~player);
+  let onClickField = card => onClickInField(~card, ~player);
   let {name, hand, deck, field, discard, coins, combat, health} = player;
   {
     ...component,
@@ -30,8 +31,8 @@ let make = (~player: player, ~onClickHand, _children) => {
         (combat |> string_of_int |> ReasonReact.string)
         <Deck title=(name ++ " Deck") deck />
         <Deck title="Discard" deck=discard faceUp=true />
-        <Cards cards=field title="Field" />
-        <Cards cards=hand title="Hand" onClick />
+        <Cards cards=field title="Field" onClick=onClickField />
+        <Cards cards=hand title="Hand" onClick=onClickHand />
       </div>,
   };
 };

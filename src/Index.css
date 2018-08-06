@@ -1,12 +1,16 @@
 .Card {
   width: 120px;
   height: 165px;
-  border: 1px solid black;
 }
 
 .Card > img {
   width: 120px;
   height: 165px;
+  transition: 1s;
+}
+
+.Card > img.expended {
+  transform: translate(15px) rotate(-90deg);
 }
 
 .Cards > .content {
