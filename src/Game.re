@@ -86,9 +86,7 @@ let players = {
       cardType: Card.Champion,
       defense: Some(4),
       faction: Some(Card.Guild),
-      /*primaryAbility:
-        Card.Tap(Card.Or([Card.AddCoins(1), Card.AddCombat(2)])),*/
-      primaryAbility: Some(Card.Tap(Card.AddCoins(1))),
+      primaryAbility: Some(Card.Expend(Card.AddCoins(1))),
       allyAbility: None,
       image: "https://www.herorealms.com/wp-content/uploads/2017/09/BAS-EN-039-street-thug.jpg",
     },
@@ -257,7 +255,7 @@ let rec resolveAbility =
   switch (ability) {
   | AddCoins(amount) => {...player, coins: player.coins + amount}
   | AddCombat(amount) => {...player, combat: player.combat + amount}
-  | Tap(ability) =>
+  | Expend(ability) =>
     let newPlayer = resolveAbility(~ability, ~player);
     newPlayer;
   };

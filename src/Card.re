@@ -16,7 +16,7 @@ type faction =
 type ability =
   | AddCoins(int)
   | AddCombat(int)
-  | Tap(ability)
+  | Expend(ability)
   | And(list(ability))
   | Or(list(ability));
 
