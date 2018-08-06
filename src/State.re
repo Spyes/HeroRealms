@@ -1,5 +1,3 @@
-open ReasonReact;
-
 type action =
   | ClickDeck
   | ClickMarketCard(Card.card)
