@@ -45,9 +45,7 @@ let rec resolveAbility =
     | AddCoins(amount) => {...player, coins: player.coins + amount}
     | AddCombat(amount) => {...player, combat: player.combat + amount}
     | AddHealth(amount) => {...player, health: player.health + amount}
-    | Expend(ability) =>
-      let newPlayer = resolveAbility(~ability=Some(ability), ~player);
-      newPlayer;
+    | Expend(ability) => resolveAbility(~ability=Some(ability), ~player)
     | And(abilities) =>
       List.fold_right(
         (ability: Card.ability, acc: Player.player) =>

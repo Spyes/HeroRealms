@@ -55,14 +55,10 @@ let reducer = (action: action, state: state) =>
     | Champion =>
       card.expended == false ?
         {
-          let field =
-            List.fold_right(
-              (curr: Card.card, acc: Cards.cards) =>
-                card.id === curr.id ?
-                  [{...curr, expended: true}, ...acc] : [curr, ...acc],
-              player.field,
-              [],
-            );
+          let expendCard = (curr: Card.card, acc: Cards.cards) =>
+            card.id === curr.id ?
+              [{...curr, expended: true}, ...acc] : [curr, ...acc];
+          let field = List.fold_right(expendCard, player.field, []);
           let newPlayer =
             Util.resolveAbility(~ability=card.primaryAbility, ~player);
           ReasonReact.Update({
