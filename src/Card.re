@@ -4,6 +4,7 @@ type cardType =
   | Action
   | Champion
   | Gem
+  | Item
   | Coin;
 
 type faction =
@@ -13,9 +14,9 @@ type faction =
   | Imperial;
 
 type ability =
-  | AddCoins(int);
-
-type abilityChain =
+  | AddCoins(int)
+  | AddCombat(int)
+  | Tap(ability)
   | And(list(ability))
   | Or(list(ability));
 
