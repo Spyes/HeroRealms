@@ -6,9 +6,9 @@ type player = {
   deck: Deck.deck,
   field: Cards.cards,
   discard: Deck.deck,
-  mutable coins: int,
-  mutable combat: int,
-  mutable health: int,
+  coins: int,
+  combat: int,
+  health: int,
 };
 
 let make = (~player: player, ~onClickInHand, ~onClickInField, _children) => {

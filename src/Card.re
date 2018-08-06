@@ -34,12 +34,8 @@ type card = {
   expended: bool,
 };
 
-let make = (~card: card, ~onClick=?, _children) => {
-  let click = _event =>
-    switch (onClick) {
-    | Some(func) => func(card)
-    | None => ()
-    };
+let make = (~card: card, ~onClick=(_card: card) => (), _children) => {
+  let click = _event => onClick(card);
   let className = card.expended ? "expended" : "";
   {
     ...component,

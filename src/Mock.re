@@ -204,7 +204,7 @@ let players = {
       cardType: Card.Item,
       defense: None,
       faction: None,
-      primaryAbility: Some(Card.AddCoins(1)),
+      primaryAbility: Some(Card.AddCombat(1)),
       allyAbility: None,
       image: "https://www.herorealms.com/wp-content/uploads/2017/09/BAS-EN-129-dagger.jpg",
       expended: false,
