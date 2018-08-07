@@ -1,6 +1,6 @@
 let drawFromDeck =
-    (~market: Cards.cards, ~deck: Deck.deck)
-    : (Cards.cards, Deck.deck) =>
+    (~market: Cards.cards, ~deck: Cards.cards)
+    : (Cards.cards, Cards.cards) =>
   List.length(market) < 5 ?
     switch (List.length(deck)) {
     | 0 => (market, deck)
@@ -42,10 +42,18 @@ let discardHand = (~player: Player.player) : Player.player => {
   hand: [],
 };
 
+let clearField = (~field: Cards.cards) : (Cards.cards, Cards.cards) => {
+  let isChampion = (card: Card.card) => card.cardType == Champion;
+  let notChampion = (card: Card.card) => card.cardType != Champion;
+  let champions = List.filter(isChampion, field);
+  let all = List.filter(notChampion, field);
+  (champions, all);
+};
+
 let prepareChampions = (~cards: Cards.cards) : Cards.cards =>
   List.map((card: Card.card) => {...card, expended: false}, cards);
 
-let shuffleDeck = (~deck: Deck.deck) : Deck.deck => {
+let shuffleDeck = (~deck: Cards.cards) : Cards.cards => {
   let _ = Random.init(int_of_float(Js.Date.now()));
   let len = 100;
   deck
@@ -60,18 +68,15 @@ let shuffleDeck = (~deck: Deck.deck) : Deck.deck => {
 
 let getDrawDeck =
     (~player: Player.player, ~amount: int)
-    : (array(Card.card), Deck.deck) =>
+    : (array(Card.card), Cards.cards) =>
   switch (List.length(player.deck) < amount) {
   | false => (Array.of_list(player.deck), player.discard)
   | true =>
     let discard: Cards.cards = shuffleDeck(~deck=player.discard);
-    let delta: int = amount - List.length(player.deck);
-    let drawDiscarded: array(Card.card) =
-      List.length(discard) > 0 ?
-        Array.sub(Array.of_list(discard), 0, delta) : [||];
-    let drawDeck: array(Card.card) =
-      List.length(player.deck) > 0 ? Array.of_list(player.deck) : [||];
-    (Array.concat([drawDeck, drawDiscarded]), []);
+    (
+      Array.concat([Array.of_list(player.deck), Array.of_list(discard)]),
+      [],
+    );
   };
 
 let rec resolveAbility =

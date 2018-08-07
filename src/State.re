@@ -3,7 +3,9 @@ type action =
   | ClickMarketCard(Card.card)
   | ClickCardInHand(Card.card, Player.player)
   | ClickCardInField(Card.card, Player.player)
-  | PrepareChampions(Player.player);
+  | PrepareChampions(Player.player)
+  | CleanupField(Player.player)
+  | FocusCard(Card.card);
 
 type phase =
   | SetupPhase(int)
@@ -13,20 +15,34 @@ type phase =
 
 type state = {
   players: Player.player,
-  deck: Deck.deck,
+  deck: Cards.cards,
   market: Cards.cards,
   currPhase: phase,
+  focused: option(Card.card),
 };
 
 let reducer = (action: action, state: state) =>
   switch (action) {
-  | PrepareChampions(player) =>
+  | FocusCard((card: Card.card)) =>
+    ReasonReact.Update({...state, focused: Some(card)})
+  | PrepareChampions((player: Player.player)) =>
     let field = Util.prepareChampions(~cards=player.field);
     ReasonReact.Update({
       ...state,
       players: {
         ...player,
         field,
+      },
+    });
+  | CleanupField((player: Player.player)) =>
+    let (field: Cards.cards, discard: Cards.cards) =
+      Util.clearField(~field=player.field);
+    ReasonReact.Update({
+      ...state,
+      players: {
+        ...player,
+        field,
+        discard: List.concat([discard, player.discard]),
       },
     });
   | ClickDeck =>
@@ -37,7 +53,7 @@ let reducer = (action: action, state: state) =>
         Util.drawFromDeck(~market=state.market, ~deck=state.deck);
       ReasonReact.Update({...state, market: newMarket, deck: newDeck});
     }
-  | ClickMarketCard(card) =>
+  | ClickMarketCard((card: Card.card)) =>
     let (newPlayer, market) =
       Util.takeFromMarket(~card, ~market=state.market, ~player=state.players);
     let (newMarket, newDeck) = Util.drawFromDeck(~market, ~deck=state.deck);
@@ -47,10 +63,10 @@ let reducer = (action: action, state: state) =>
       players: newPlayer,
       deck: newDeck,
     });
-  | ClickCardInHand(card, player) =>
+  | ClickCardInHand((card: Card.card), (player: Player.player)) =>
     let newPlayer = Util.playFromHand(~card, ~player);
     ReasonReact.Update({...state, players: newPlayer});
-  | ClickCardInField(card, player) =>
+  | ClickCardInField((card: Card.card), (player: Player.player)) =>
     switch (card.cardType) {
     | Champion =>
       card.expended == false ?

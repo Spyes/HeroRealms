@@ -1,3 +1,7 @@
+.Game {
+  display: flex;
+}
+
 .Card {
   width: 120px;
   height: 165px;
@@ -22,6 +26,27 @@
   height: 165px;
 }
 
+.Deck > .content > .empty {
+  width: 120px;
+  height: 100%;
+  background-color: #dadada;
+  border-radius: 5px;
+}
+
 .Deck > .content > img {
   height: 165px;
+}
+
+.Focused > .Card {
+  width: unset;
+  height: unset;
+}
+
+.Focused > .Card > img {
+  width: unset;
+  height: unset;
+}
+
+.Player > .Decks {
+  display: flex;
 }

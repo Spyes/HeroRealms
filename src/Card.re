@@ -35,13 +35,20 @@ type card = {
   expended: bool,
 };
 
-let make = (~card: card, ~onClick=(_card: card) => (), _children) => {
+let make =
+    (
+      ~card: card,
+      ~onClick=(_card: card) => (),
+      ~onMouseOver=(_card: card) => (),
+      _children,
+    ) => {
   let click = _event => onClick(card);
+  let mouseOver = _event => onMouseOver(card);
   let className = card.expended ? "expended" : "";
   {
     ...component,
     render: _self =>
-      <div className="Card" onClick=click>
+      <div className="Card" onClick=click onMouseOver=mouseOver>
         <img src=card.image className />
       </div>,
   };

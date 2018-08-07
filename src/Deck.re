@@ -1,10 +1,8 @@
 let component = ReasonReact.statelessComponent("Deck");
 
-type deck = list(Card.card);
-
 let make =
     (
-      ~deck: deck,
+      ~deck: Cards.cards,
       ~faceUp: bool=false,
       ~title: string="",
       ~onClick=_event => (),
@@ -14,7 +12,7 @@ let make =
   render: _self => {
     let deckElement =
       switch (List.length(deck)) {
-      | 0 => ReasonReact.null
+      | 0 => <div className="empty" />
       | _ =>
         faceUp ?
           {
