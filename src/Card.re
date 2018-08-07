@@ -20,7 +20,8 @@ type ability =
   | Expend(ability)
   | DrawCards(int)
   | And(list(ability))
-  | Or(list(ability));
+  | Or(list(ability))
+  | ForEach((cardType, ability));
 
 type card = {
   id: string,

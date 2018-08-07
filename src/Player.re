@@ -37,7 +37,10 @@ let make =
         ("Combat: " |> ReasonReact.string)
         (combat |> string_of_int |> ReasonReact.string)
         <div className="Decks">
-          <Deck title=(name ++ " Deck") deck />
+          <Deck
+            title=("Deck (" ++ (deck |> List.length |> string_of_int) ++ ")")
+            deck
+          />
           <Deck
             title=(
               "Discard (" ++ (discard |> List.length |> string_of_int) ++ ")"

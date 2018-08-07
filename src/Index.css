@@ -50,3 +50,7 @@
 .Player > .Decks {
   display: flex;
 }
+
+.DeckAndMarket {
+  display: flex;
+}

@@ -5,6 +5,7 @@ type action =
   | ClickCardInField(Card.card, Player.player)
   | PrepareChampions(Player.player)
   | CleanupField(Player.player)
+  | DrawHand(Player.player)
   | FocusCard(Card.card);
 
 type phase =
@@ -12,11 +13,19 @@ type phase =
   | MainPhase(int)
   | DiscardPhase(int)
   | DrawPhase(int);
+let phaseString = (phase: phase) : string =>
+  switch (phase) {
+  | SetupPhase(n) => "Setup - " ++ string_of_int(n)
+  | MainPhase(n) => "Main - " ++ string_of_int(n)
+  | DiscardPhase(n) => "Discard - " ++ string_of_int(n)
+  | DrawPhase(n) => "Draw - " ++ string_of_int(n)
+  };
 
 type state = {
   players: Player.player,
   deck: Cards.cards,
   market: Cards.cards,
+  sacrifice: Cards.cards,
   currPhase: phase,
   focused: option(Card.card),
 };
@@ -34,6 +43,10 @@ let reducer = (action: action, state: state) =>
         field,
       },
     });
+  | DrawHand((player: Player.player)) =>
+    let players =
+      Util.resolveAbility(~ability=Some(Card.DrawCards(5)), ~player);
+    ReasonReact.Update({...state, players});
   | CleanupField((player: Player.player)) =>
     let (field: Cards.cards, discard: Cards.cards) =
       Util.clearField(~field=player.field);
@@ -42,7 +55,10 @@ let reducer = (action: action, state: state) =>
       players: {
         ...player,
         field,
-        discard: List.concat([discard, player.discard]),
+        combat: 0,
+        coins: 0,
+        hand: [],
+        discard: List.concat([discard, player.hand, player.discard]),
       },
     });
   | ClickDeck =>

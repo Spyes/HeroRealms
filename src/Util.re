@@ -36,12 +36,6 @@ let takeFromMarket =
     (player, market);
   };
 
-let discardHand = (~player: Player.player) : Player.player => {
-  ...player,
-  discard: List.concat([player.hand, player.discard]),
-  hand: [],
-};
-
 let clearField = (~field: Cards.cards) : (Cards.cards, Cards.cards) => {
   let isChampion = (card: Card.card) => card.cardType == Champion;
   let notChampion = (card: Card.card) => card.cardType != Champion;
@@ -94,6 +88,8 @@ let rec resolveAbility =
       switch (Array.length(deck)) {
       | 0 => player
       | _ =>
+        let amount =
+          amount > Array.length(deck) ? Array.length(deck) : amount;
         let toHand: Cards.cards = Array.to_list(Array.sub(deck, 0, amount));
         let newDeck: Cards.cards =
           Array.to_list(
@@ -114,6 +110,15 @@ let rec resolveAbility =
         abilities,
         player,
       )
+    | ForEach((cardType, ability)) =>
+      let isType = (card: Card.card) => card.cardType == cardType;
+      let cards = List.filter(isType, player.field);
+      List.fold_right(
+        (_card: Card.card, acc: Player.player) =>
+          resolveAbility(~ability=Some(ability), ~player=acc),
+        cards,
+        player,
+      );
     | _ => player
     }
   | None => player
