@@ -42,7 +42,7 @@ let discardHand = (~player: Player.player) : Player.player => {
   hand: [],
 };
 
-let prepareChampions = (~cards: Cards.cards) =>
+let prepareChampions = (~cards: Cards.cards) : Cards.cards =>
   List.map((card: Card.card) => {...card, expended: false}, cards);
 
 let shuffleDeck = (~deck: Deck.deck) : Deck.deck => {
@@ -58,6 +58,22 @@ let shuffleDeck = (~deck: Deck.deck) : Deck.deck => {
   |> List.map(fst);
 };
 
+let getDrawDeck =
+    (~player: Player.player, ~amount: int)
+    : (array(Card.card), Deck.deck) =>
+  switch (List.length(player.deck) < amount) {
+  | false => (Array.of_list(player.deck), player.discard)
+  | true =>
+    let discard: Cards.cards = shuffleDeck(~deck=player.discard);
+    let delta: int = amount - List.length(player.deck);
+    let drawDiscarded: array(Card.card) =
+      List.length(discard) > 0 ?
+        Array.sub(Array.of_list(discard), 0, delta) : [||];
+    let drawDeck: array(Card.card) =
+      List.length(player.deck) > 0 ? Array.of_list(player.deck) : [||];
+    (Array.concat([drawDeck, drawDiscarded]), []);
+  };
+
 let rec resolveAbility =
         (~ability: option(Card.ability), ~player: Player.player)
         : Player.player =>
@@ -68,17 +84,23 @@ let rec resolveAbility =
     | AddCombat(amount) => {...player, combat: player.combat + amount}
     | AddHealth(amount) => {...player, health: player.health + amount}
     | DrawCards(amount) =>
-      let deck: array(Card.card) =
-        switch (List.length(player.deck)) {
-        | 0 => Array.of_list(shuffleDeck(~deck=player.discard))
-        | _ => Array.of_list(player.deck)
+      let (deck: array(Card.card), discard: Cards.cards) =
+        getDrawDeck(~player, ~amount);
+      switch (Array.length(deck)) {
+      | 0 => player
+      | _ =>
+        let toHand: Cards.cards = Array.to_list(Array.sub(deck, 0, amount));
+        let newDeck: Cards.cards =
+          Array.to_list(
+            Array.sub(deck, amount, Array.length(deck) - amount),
+          );
+        {
+          ...player,
+          hand: List.concat([toHand, player.hand]),
+          deck: newDeck,
+          discard,
         };
-      let toHand: Cards.cards = Array.to_list(Array.sub(deck, 0, amount));
-      let newDeck: Cards.cards =
-        Array.to_list(
-          Array.sub(deck, amount - 1, Array.length(deck) - amount),
-        );
-      {...player, hand: List.concat([toHand, player.hand]), deck: newDeck};
+      };
     | Expend(ability) => resolveAbility(~ability=Some(ability), ~player)
     | And(abilities) =>
       List.fold_right(
