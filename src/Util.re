@@ -68,13 +68,13 @@ let rec resolveAbility =
     | AddCombat(amount) => {...player, combat: player.combat + amount}
     | AddHealth(amount) => {...player, health: player.health + amount}
     | DrawCards(amount) =>
-      let deck =
+      let deck: array(Card.card) =
         switch (List.length(player.deck)) {
         | 0 => Array.of_list(shuffleDeck(~deck=player.discard))
         | _ => Array.of_list(player.deck)
         };
-      let toHand = Array.to_list(Array.sub(deck, 0, amount));
-      let newDeck =
+      let toHand: Cards.cards = Array.to_list(Array.sub(deck, 0, amount));
+      let newDeck: Cards.cards =
         Array.to_list(
           Array.sub(deck, amount - 1, Array.length(deck) - amount),
         );
