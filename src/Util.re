@@ -36,6 +36,28 @@ let takeFromMarket =
     (player, market);
   };
 
+let discardHand = (~player: Player.player) : Player.player => {
+  ...player,
+  discard: List.concat([player.hand, player.discard]),
+  hand: [],
+};
+
+let prepareChampions = (~cards: Cards.cards) =>
+  List.map((card: Card.card) => {...card, expended: false}, cards);
+
+let shuffleDeck = (~deck: Deck.deck) : Deck.deck => {
+  let _ = Random.init(int_of_float(Js.Date.now()));
+  let len = 100;
+  deck
+  |> List.map(card => (card, Random.int(len)))
+  |> List.sort((a, b) => {
+       let (_, n1) = a;
+       let (_, n2) = b;
+       n1 - n2;
+     })
+  |> List.map(fst);
+};
+
 let rec resolveAbility =
         (~ability: option(Card.ability), ~player: Player.player)
         : Player.player =>
@@ -45,6 +67,18 @@ let rec resolveAbility =
     | AddCoins(amount) => {...player, coins: player.coins + amount}
     | AddCombat(amount) => {...player, combat: player.combat + amount}
     | AddHealth(amount) => {...player, health: player.health + amount}
+    | DrawCards(amount) =>
+      let deck =
+        switch (List.length(player.deck)) {
+        | 0 => Array.of_list(shuffleDeck(~deck=player.discard))
+        | _ => Array.of_list(player.deck)
+        };
+      let toHand = Array.to_list(Array.sub(deck, 0, amount));
+      let newDeck =
+        Array.to_list(
+          Array.sub(deck, amount - 1, Array.length(deck) - amount),
+        );
+      {...player, hand: List.concat([toHand, player.hand]), deck: newDeck};
     | Expend(ability) => resolveAbility(~ability=Some(ability), ~player)
     | And(abilities) =>
       List.fold_right(
@@ -67,26 +101,4 @@ let playFromHand = (~card: Card.card, ~player: Player.player) : Player.player =>
     | _ => resolveAbility(~ability=card.primaryAbility, ~player)
     };
   {...player, hand: newHand, field: [card, ...player.field]};
-};
-
-let discardHand = (~player: Player.player) : Player.player => {
-  ...player,
-  discard: List.concat([player.hand, player.discard]),
-  hand: [],
-};
-
-let prepareChampions = (~cards: Cards.cards) =>
-  List.map((card: Card.card) => {...card, expended: false}, cards);
-
-let shuffleDeck = (~deck: Deck.deck) : Deck.deck => {
-  let _ = Random.init(int_of_float(Js.Date.now()));
-  let len = 100;
-  deck
-  |> List.map(card => (card, Random.int(len)))
-  |> List.sort((a, b) => {
-       let (_, n1) = a;
-       let (_, n2) = b;
-       n1 - n2;
-     })
-  |> List.map(fst);
 };

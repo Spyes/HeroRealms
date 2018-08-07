@@ -18,6 +18,7 @@ type ability =
   | AddCombat(int)
   | AddHealth(int)
   | Expend(ability)
+  | DrawCards(int)
   | And(list(ability))
   | Or(list(ability));
 

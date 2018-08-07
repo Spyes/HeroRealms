@@ -84,7 +84,8 @@ let players = {
       cardType: Card.Champion,
       defense: Some(5),
       faction: Some(Imperial),
-      primaryAbility: Some(Expend(And([AddCombat(2), AddHealth(3)]))),
+      primaryAbility:
+        Some(Expend(And([AddCombat(2), AddHealth(3), DrawCards(2)]))),
       allyAbility: None,
       image: "https://www.herorealms.com/wp-content/uploads/2017/09/BAS-EN-006-cristov-the-just.jpg",
       expended: false,
