@@ -73,6 +73,14 @@ let getDrawDeck =
     );
   };
 
+let setStats = (~key: string, ~value: string, ~player: Player.player) =>
+  switch (key) {
+  | "coins" => {...player, coins: int_of_string(value)}
+  | "health" => {...player, health: int_of_string(value)}
+  | "combat" => {...player, combat: int_of_string(value)}
+  | _ => player
+  };
+
 let rec resolveAbility =
         (~ability: option(Card.ability), ~player: Player.player)
         : Player.player =>

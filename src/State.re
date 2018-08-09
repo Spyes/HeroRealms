@@ -45,33 +45,8 @@ let reducer = (action: action, state: state) =>
       },
     });
   | SetStat((key: string), (value: string), (player: Player.player)) =>
-    switch (key) {
-    | "coins" =>
-      ReasonReact.Update({
-        ...state,
-        players: {
-          ...player,
-          coins: int_of_string(value),
-        },
-      })
-    | "health" =>
-      ReasonReact.Update({
-        ...state,
-        players: {
-          ...player,
-          health: int_of_string(value),
-        },
-      })
-    | "combat" =>
-      ReasonReact.Update({
-        ...state,
-        players: {
-          ...player,
-          combat: int_of_string(value),
-        },
-      })
-    | _ => ReasonReact.NoUpdate
-    }
+    let players = Util.setStats(~key, ~value, ~player);
+    ReasonReact.Update({...state, players});
   | DrawHand((player: Player.player)) =>
     let players =
       Util.resolveAbility(~ability=Some(Card.DrawCards(5)), ~player);
