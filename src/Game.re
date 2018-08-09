@@ -41,7 +41,7 @@ let make = _children => {
           <button onClick=(_event => self.send(State.CleanupField(players)))>
             ("Clean-up" |> ReasonReact.string)
           </button>
-          <button onClick=(_event => self.send(State.DrawHand(players)))>
+          <button onClick=(_event => self.send(State.DrawHand(players, 5)))>
             ("Draw Hand" |> ReasonReact.string)
           </button>
         </div>
@@ -61,6 +61,9 @@ let make = _children => {
           onChangeStat=(
             (~key: string, ~value: string, ~player: Player.player) =>
               self.send(State.SetStat(key, value, player))
+          )
+          onClickDeck=(
+            (~player: Player.player) => self.send(State.DrawHand(player, 1))
           )
         />
         <div className="DeckAndMarket">

@@ -16,6 +16,7 @@ let make =
       ~player: player,
       ~onClickInHand,
       ~onClickInField,
+      ~onClickDeck,
       ~onMouseOverCard=_card => (),
       ~onChangeStat,
       _children,
@@ -24,6 +25,7 @@ let make =
     evt |> ReactEventRe.Form.target |> ReactDOMRe.domElementToObj;
   let onClickHand = card => onClickInHand(~card, ~player);
   let onClickField = card => onClickInField(~card, ~player);
+  let drawCard = _event => onClickDeck(~player);
   let onChange = event => {
     let key = valueFromEvent(event)##name;
     let value = valueFromEvent(event)##value;
@@ -63,6 +65,7 @@ let make =
           <Deck
             title=("Deck (" ++ (deck |> List.length |> string_of_int) ++ ")")
             deck
+            onClick=drawCard
           />
           <Deck
             title=(

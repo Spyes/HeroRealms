@@ -5,7 +5,7 @@ type action =
   | ClickCardInField(Card.card, Player.player)
   | PrepareChampions(Player.player)
   | CleanupField(Player.player)
-  | DrawHand(Player.player)
+  | DrawHand(Player.player, int)
   | SetStat(string, string, Player.player)
   | FocusCard(Card.card);
 
@@ -47,9 +47,9 @@ let reducer = (action: action, state: state) =>
   | SetStat((key: string), (value: string), (player: Player.player)) =>
     let players = Util.setStats(~key, ~value, ~player);
     ReasonReact.Update({...state, players});
-  | DrawHand((player: Player.player)) =>
+  | DrawHand((player: Player.player), (amount: int)) =>
     let players =
-      Util.resolveAbility(~ability=Some(Card.DrawCards(5)), ~player);
+      Util.resolveAbility(~ability=Some(Card.DrawCards(amount)), ~player);
     ReasonReact.Update({...state, players});
   | CleanupField((player: Player.player)) =>
     let (field: Cards.cards, discard: Cards.cards) =
