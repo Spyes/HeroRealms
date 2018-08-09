@@ -6,6 +6,7 @@ type action =
   | PrepareChampions(Player.player)
   | CleanupField(Player.player)
   | DrawHand(Player.player)
+  | SetStat(string, string, Player.player)
   | FocusCard(Card.card);
 
 type phase =
@@ -43,6 +44,34 @@ let reducer = (action: action, state: state) =>
         field,
       },
     });
+  | SetStat((key: string), (value: string), (player: Player.player)) =>
+    switch (key) {
+    | "coins" =>
+      ReasonReact.Update({
+        ...state,
+        players: {
+          ...player,
+          coins: int_of_string(value),
+        },
+      })
+    | "health" =>
+      ReasonReact.Update({
+        ...state,
+        players: {
+          ...player,
+          health: int_of_string(value),
+        },
+      })
+    | "combat" =>
+      ReasonReact.Update({
+        ...state,
+        players: {
+          ...player,
+          combat: int_of_string(value),
+        },
+      })
+    | _ => ReasonReact.NoUpdate
+    }
   | DrawHand((player: Player.player)) =>
     let players =
       Util.resolveAbility(~ability=Some(Card.DrawCards(5)), ~player);

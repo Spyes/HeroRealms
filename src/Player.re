@@ -17,10 +17,18 @@ let make =
       ~onClickInHand,
       ~onClickInField,
       ~onMouseOverCard=_card => (),
+      ~onChangeStat,
       _children,
     ) => {
+  let valueFromEvent = evt =>
+    evt |> ReactEventRe.Form.target |> ReactDOMRe.domElementToObj;
   let onClickHand = card => onClickInHand(~card, ~player);
   let onClickField = card => onClickInField(~card, ~player);
+  let onChange = event => {
+    let key = valueFromEvent(event)##name;
+    let value = valueFromEvent(event)##value;
+    onChangeStat(~key, ~value, ~player);
+  };
   let {name, hand, deck, field, discard, coins, combat, health} = player;
   {
     ...component,
@@ -29,13 +37,28 @@ let make =
         (name |> ReasonReact.string)
         <br />
         ("Health: " |> ReasonReact.string)
-        (health |> string_of_int |> ReasonReact.string)
+        <input
+          _type="number"
+          value=(string_of_int(health))
+          name="health"
+          onChange
+        />
         <br />
         ("Coins: " |> ReasonReact.string)
-        (coins |> string_of_int |> ReasonReact.string)
+        <input
+          _type="number"
+          value=(string_of_int(coins))
+          name="coins"
+          onChange
+        />
         <br />
         ("Combat: " |> ReasonReact.string)
-        (combat |> string_of_int |> ReasonReact.string)
+        <input
+          _type="number"
+          value=(string_of_int(combat))
+          name="combat"
+          onChange
+        />
         <div className="Decks">
           <Deck
             title=("Deck (" ++ (deck |> List.length |> string_of_int) ++ ")")

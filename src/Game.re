@@ -58,6 +58,10 @@ let make = _children => {
           onMouseOverCard=(
             (card: Card.card) => self.send(State.FocusCard(card))
           )
+          onChangeStat=(
+            (~key: string, ~value: string, ~player: Player.player) =>
+              self.send(State.SetStat(key, value, player))
+          )
         />
         <div className="DeckAndMarket">
           <Deck deck=sacrifice title="Sacrifice" faceUp=true />
