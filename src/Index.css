@@ -41,6 +41,14 @@
   margin-left: 14px;
 }
 
+.Card > .primary-ability.full,
+.Card > .ally-ability.full,
+.Card > .sacrifice-ally.full
+{
+  top: 115px;
+  bottom: 12px;
+}
+
 .Card > img {
   width: 120px;
   height: 165px;

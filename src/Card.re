@@ -48,6 +48,17 @@ let make =
   let click = _event => onClick(card);
   let mouseOver = _event => onMouseOver(card);
   let className = card.expended ? "expended" : "";
+  let numOfAbilities =
+    List.fold_left(
+      (acc: int, ability: option(ability)) =>
+        switch (ability) {
+        | Some(_) => acc + 1
+        | None => 0
+        },
+      0,
+      [card.primaryAbility, card.allyAbility, card.sacrificeAbility],
+    );
+  Js.log(numOfAbilities);
   let primaryAbilityOverlayElement =
     switch (overlays, card.primaryAbility) {
     | (true, Some(_ability)) =>
