@@ -5,6 +5,40 @@
 .Card {
   width: 120px;
   height: 165px;
+  position: relative;
+}
+
+.Card > .primary-ability {
+  float: left;
+  position: absolute;
+  left: 0px;
+  top: 115px;
+  bottom: 33px;
+  width: 90px;
+  z-index: 1000;
+  margin-left: 14px;
+}
+
+.Card > .ally-ability {
+  float: left;
+  position: absolute;
+  left: 0px;
+  top: 133px;
+  bottom: 12px;
+  width: 90px;
+  z-index: 1000;
+  margin-left: 14px;
+}
+
+.Card > .sacrifice-ability {
+  float: left;
+  position: absolute;
+  left: 0px;
+  top: 133px;
+  bottom: 12px;
+  width: 90px;
+  z-index: 1000;
+  margin-left: 14px;
 }
 
 .Card > img {
