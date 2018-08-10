@@ -1,5 +1,6 @@
 type action =
   | ClickDeck
+  | ClickFireGems
   | ClickMarketCard(Card.card)
   | ClickCardInHand(Card.card, Player.player)
   | ClickCardInField(Card.card, Player.player)
@@ -7,13 +8,16 @@ type action =
   | CleanupField(Player.player)
   | DrawHand(Player.player, int)
   | SetStat(string, string, Player.player)
-  | FocusCard(Card.card);
+  | FocusCard(Card.card)
+  | PlayAllyAbility(Card.card, Player.player)
+  | PlayPrimaryAbility(Card.card, Player.player);
 
 type phase =
   | SetupPhase(int)
   | MainPhase(int)
   | DiscardPhase(int)
   | DrawPhase(int);
+
 let phaseString = (phase: phase) : string =>
   switch (phase) {
   | SetupPhase(n) => "Setup - " ++ string_of_int(n)
@@ -25,10 +29,13 @@ let phaseString = (phase: phase) : string =>
 type state = {
   players: Player.player,
   deck: Cards.cards,
+  fireGems: Cards.cards,
   market: Cards.cards,
   sacrifice: Cards.cards,
   currPhase: phase,
   focused: option(Card.card),
+  playedPrimaryAbility: list(string),
+  playedAllyAbility: list(string),
 };
 
 let reducer = (action: action, state: state) =>
@@ -64,48 +71,67 @@ let reducer = (action: action, state: state) =>
         hand: [],
         discard: List.concat([discard, player.hand, player.discard]),
       },
+      playedAllyAbility: [],
+      playedPrimaryAbility: [],
     });
   | ClickDeck =>
     switch (List.length(state.deck)) {
     | 0 => ReasonReact.NoUpdate
     | _ =>
-      let (newMarket, newDeck) =
+      let (market, deck) =
         Util.drawFromDeck(~market=state.market, ~deck=state.deck);
-      ReasonReact.Update({...state, market: newMarket, deck: newDeck});
+      ReasonReact.Update({...state, market, deck});
+    }
+  | ClickFireGems =>
+    switch (List.length(state.fireGems)) {
+    | 0 => ReasonReact.NoUpdate
+    | _ =>
+      let card: Card.card = List.hd(state.fireGems);
+      let (players, fireGems) =
+        Util.takeFromMarket(
+          ~card,
+          ~market=state.fireGems,
+          ~player=state.players,
+        );
+      ReasonReact.Update({...state, fireGems, players});
     }
   | ClickMarketCard((card: Card.card)) =>
-    let (newPlayer, market) =
+    let (players, fromMarket) =
       Util.takeFromMarket(~card, ~market=state.market, ~player=state.players);
-    let (newMarket, newDeck) = Util.drawFromDeck(~market, ~deck=state.deck);
-    ReasonReact.Update({
-      ...state,
-      market: newMarket,
-      players: newPlayer,
-      deck: newDeck,
-    });
+    let (market, deck) =
+      Util.drawFromDeck(~market=fromMarket, ~deck=state.deck);
+    ReasonReact.Update({...state, market, players, deck});
   | ClickCardInHand((card: Card.card), (player: Player.player)) =>
     let newPlayer = Util.playFromHand(~card, ~player);
     ReasonReact.Update({...state, players: newPlayer});
-  | ClickCardInField((card: Card.card), (player: Player.player)) =>
-    switch (card.cardType) {
-    | Champion =>
-      card.expended == false ?
-        {
-          let expendCard = (curr: Card.card, acc: Cards.cards) =>
-            card.id === curr.id ?
-              [{...curr, expended: true}, ...acc] : [curr, ...acc];
-          let field = List.fold_right(expendCard, player.field, []);
-          let newPlayer =
-            Util.resolveAbility(~ability=card.primaryAbility, ~player);
-          ReasonReact.Update({
-            ...state,
-            players: {
-              ...newPlayer,
-              field,
-            },
-          });
-        } :
-        ReasonReact.NoUpdate
-    | _ => ReasonReact.NoUpdate
-    }
+  | PlayAllyAbility((card: Card.card), (player: Player.player)) =>
+    let eql = (id: string) => id === card.id;
+    switch (List.exists(eql, state.playedAllyAbility)) {
+    | false =>
+      let players = Util.resolveAbility(~ability=card.allyAbility, ~player);
+      ReasonReact.Update({
+        ...state,
+        players,
+        playedAllyAbility: [card.id, ...state.playedAllyAbility],
+      });
+    | true => ReasonReact.NoUpdate
+    };
+  | PlayPrimaryAbility((card: Card.card), (player: Player.player)) =>
+    let eql = (id: string) => id === card.id;
+    switch (List.exists(eql, state.playedPrimaryAbility)) {
+    | false =>
+      let players =
+        Util.resolveAbility(~ability=card.primaryAbility, ~player);
+      switch (card.primaryAbility) {
+      | Some(_) => card.expended = true
+      | _ => ()
+      };
+      ReasonReact.Update({
+        ...state,
+        players,
+        playedPrimaryAbility: [card.id, ...state.playedPrimaryAbility],
+      });
+    | true => ReasonReact.NoUpdate
+    };
+  | _ => ReasonReact.NoUpdate
   };

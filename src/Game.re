@@ -11,15 +11,19 @@ let make = _children => {
         deck: Util.shuffleDeck(~deck=Mock.players.deck),
       },
       deck: Util.shuffleDeck(~deck=Mock.deck),
+      fireGems: Util.shuffleDeck(~deck=Mock.fireGems),
       market: [],
       sacrifice: [],
       currPhase: SetupPhase(0),
       focused: None,
+      playedPrimaryAbility: [],
+      playedAllyAbility: [],
     }: State.state
   ),
   reducer: State.reducer,
   render: self => {
-    let {players, deck, market, focused, sacrifice}: State.state = self.state;
+    let {players, deck, fireGems, market, focused, sacrifice}: State.state =
+      self.state;
     let focusedCardElement =
       switch (focused) {
       | Some((card: Card.card)) =>
@@ -65,6 +69,14 @@ let make = _children => {
           onClickDeck=(
             (~player: Player.player) => self.send(State.DrawHand(player, 1))
           )
+          onClickPrimaryAbility=(
+            (card: Card.card, player: Player.player) =>
+              self.send(State.PlayPrimaryAbility(card, player))
+          )
+          onClickAllyAbility=(
+            (card: Card.card, player: Player.player) =>
+              self.send(State.PlayAllyAbility(card, player))
+          )
         />
         <div className="DeckAndMarket">
           <Deck deck=sacrifice title="Sacrifice" faceUp=true />
@@ -72,6 +84,12 @@ let make = _children => {
             deck
             title="Deck"
             onClick=(_event => self.send(State.ClickDeck))
+          />
+          <Deck
+            deck=fireGems
+            title="Fire Gems"
+            faceUp=true
+            onClick=(_event => self.send(State.ClickFireGems))
           />
           <Cards
             cards=market

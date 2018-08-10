@@ -7,7 +7,9 @@ let make =
       ~cards: cards,
       ~title: string="",
       ~onClick=(_card: Card.card) => (),
-      ~onMouseOver=_card => (),
+      ~onMouseOver=(_card: Card.card) => (),
+      ~onClickAllyAbility=(_card: Card.card) => (),
+      ~onClickPrimaryAbility=(_card: Card.card) => (),
       _children,
     ) => {
   ...component,
@@ -18,7 +20,14 @@ let make =
         (
           cards
           |> List.map((card: Card.card) =>
-               <Card card onClick key=card.id onMouseOver />
+               <Card
+                 key=card.id
+                 card
+                 onClick
+                 onMouseOver
+                 onClickAllyAbility
+                 onClickPrimaryAbility
+               />
              )
           |> Array.of_list
           |> ReasonReact.array

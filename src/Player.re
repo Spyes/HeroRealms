@@ -17,7 +17,9 @@ let make =
       ~onClickInHand,
       ~onClickInField,
       ~onClickDeck,
-      ~onMouseOverCard=_card => (),
+      ~onMouseOverCard=(_card: Card.card) => (),
+      ~onClickPrimaryAbility=(_card: Card.card, _player: player) => (),
+      ~onClickAllyAbility=(_card: Card.card, _player: player) => (),
       ~onChangeStat,
       _children,
     ) => {
@@ -25,6 +27,8 @@ let make =
     evt |> ReactEventRe.Form.target |> ReactDOMRe.domElementToObj;
   let onClickHand = card => onClickInHand(~card, ~player);
   let onClickField = card => onClickInField(~card, ~player);
+  let onClickPrimaryAbility = card => onClickPrimaryAbility(card, player);
+  let onClickAllyAbility = card => onClickAllyAbility(card, player);
   let drawCard = _event => onClickDeck(~player);
   let onChange = event => {
     let key = valueFromEvent(event)##name;
@@ -79,6 +83,8 @@ let make =
           cards=field
           title="Field"
           onClick=onClickField
+          onClickPrimaryAbility
+          onClickAllyAbility
           onMouseOver=onMouseOverCard
         />
         <Cards
