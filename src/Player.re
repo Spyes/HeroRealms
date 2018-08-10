@@ -20,6 +20,7 @@ let make =
       ~onMouseOverCard=(_card: Card.card) => (),
       ~onClickPrimaryAbility=(_card: Card.card, _player: player) => (),
       ~onClickAllyAbility=(_card: Card.card, _player: player) => (),
+      ~onClickSacrificeAbility=(_card: Card.card, _player: player) => (),
       ~onChangeStat,
       _children,
     ) => {
@@ -29,6 +30,7 @@ let make =
   let onClickField = card => onClickInField(~card, ~player);
   let onClickPrimaryAbility = card => onClickPrimaryAbility(card, player);
   let onClickAllyAbility = card => onClickAllyAbility(card, player);
+  let onClickSacrificeAbility = card => onClickSacrificeAbility(card, player);
   let drawCard = _event => onClickDeck(~player);
   let onChange = event => {
     let key = valueFromEvent(event)##name;
@@ -85,6 +87,7 @@ let make =
           onClick=onClickField
           onClickPrimaryAbility
           onClickAllyAbility
+          onClickSacrificeAbility
           onMouseOver=onMouseOverCard
         />
         <Cards

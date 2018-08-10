@@ -10,6 +10,7 @@ let make =
       ~onMouseOver=(_card: Card.card) => (),
       ~onClickAllyAbility=(_card: Card.card) => (),
       ~onClickPrimaryAbility=(_card: Card.card) => (),
+      ~onClickSacrificeAbility=(_card: Card.card) => (),
       _children,
     ) => {
   ...component,
@@ -27,6 +28,7 @@ let make =
                  onMouseOver
                  onClickAllyAbility
                  onClickPrimaryAbility
+                 onClickSacrificeAbility
                />
              )
           |> Array.of_list

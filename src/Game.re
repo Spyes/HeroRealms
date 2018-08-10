@@ -77,6 +77,10 @@ let make = _children => {
             (card: Card.card, player: Player.player) =>
               self.send(State.PlayAllyAbility(card, player))
           )
+          onClickSacrificeAbility=(
+            (card: Card.card, player: Player.player) =>
+              self.send(State.PlaySacrificeAbility(card, player))
+          )
         />
         <div className="DeckAndMarket">
           <Deck deck=sacrifice title="Sacrifice" faceUp=true />

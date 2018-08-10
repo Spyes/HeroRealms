@@ -135,10 +135,5 @@ let rec resolveAbility =
 let playFromHand = (~card: Card.card, ~player: Player.player) : Player.player => {
   let notIt = (c: Card.card) => c.id !== card.id;
   let newHand = List.filter(notIt, player.hand);
-  let player =
-    switch (card.cardType) {
-    | Champion => player
-    | _ => resolveAbility(~ability=card.primaryAbility, ~player)
-    };
   {...player, hand: newHand, field: [card, ...player.field]};
 };

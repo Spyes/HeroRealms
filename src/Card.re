@@ -52,7 +52,7 @@ let make =
   let mouseOver = _event => onMouseOver(card);
   let clickPrimary = _event => onClickPrimaryAbility(card);
   let clickAlly = _event => onClickAllyAbility(card);
-  let _clickSacrifice = _event => onClickSacrificeAbility(card);
+  let clickSacrifice = _event => onClickSacrificeAbility(card);
   let className = card.expended ? "expended" : "";
   let numOfAbilities =
     List.fold_left(
@@ -82,12 +82,22 @@ let make =
     | (true, _, None)
     | (false, _, _) => ReasonReact.null
     };
+  let sacrificeAbilityOverlayElement =
+    switch (overlays, numOfAbilities, card.sacrificeAbility) {
+    | (true, 1, Some(_ability)) =>
+      <div className="sacrifice-ability full" onClick=clickSacrifice />
+    | (true, _, Some(_ability)) =>
+      <div className="sacrifice-ability" onClick=clickSacrifice />
+    | (true, _, None)
+    | (false, _, _) => ReasonReact.null
+    };
   {
     ...component,
     render: _self =>
       <div className="Card" onClick=click onMouseOver=mouseOver>
         primaryAbilityOverlayElement
         allyAbilityOverlayElement
+        sacrificeAbilityOverlayElement
         <img src=card.image className />
       </div>,
   };

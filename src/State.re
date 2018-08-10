@@ -10,7 +10,8 @@ type action =
   | SetStat(string, string, Player.player)
   | FocusCard(Card.card)
   | PlayAllyAbility(Card.card, Player.player)
-  | PlayPrimaryAbility(Card.card, Player.player);
+  | PlayPrimaryAbility(Card.card, Player.player)
+  | PlaySacrificeAbility(Card.card, Player.player);
 
 type phase =
   | SetupPhase(int)
@@ -106,15 +107,20 @@ let reducer = (action: action, state: state) =>
     ReasonReact.Update({...state, players: newPlayer});
   | PlayAllyAbility((card: Card.card), (player: Player.player)) =>
     let eql = (id: string) => id === card.id;
-    switch (List.exists(eql, state.playedAllyAbility)) {
-    | false =>
+    let allies = (ally: Card.card) =>
+      ally.faction === card.faction && ! eql(ally.id);
+    let alliesExist = List.exists(allies, player.field);
+    let playedAbility = List.exists(eql, state.playedAllyAbility);
+    switch (playedAbility, alliesExist) {
+    | (false, false)
+    | (true, _) => ReasonReact.NoUpdate
+    | (false, true) =>
       let players = Util.resolveAbility(~ability=card.allyAbility, ~player);
       ReasonReact.Update({
         ...state,
         players,
         playedAllyAbility: [card.id, ...state.playedAllyAbility],
       });
-    | true => ReasonReact.NoUpdate
     };
   | PlayPrimaryAbility((card: Card.card), (player: Player.player)) =>
     let eql = (id: string) => id === card.id;
@@ -123,7 +129,7 @@ let reducer = (action: action, state: state) =>
       let players =
         Util.resolveAbility(~ability=card.primaryAbility, ~player);
       switch (card.primaryAbility) {
-      | Some(_) => card.expended = true
+      | Some(Expend(_)) => card.expended = true
       | _ => ()
       };
       ReasonReact.Update({
@@ -133,5 +139,19 @@ let reducer = (action: action, state: state) =>
       });
     | true => ReasonReact.NoUpdate
     };
+  | PlaySacrificeAbility((card: Card.card), (player: Player.player)) =>
+    let players =
+      Util.resolveAbility(~ability=card.sacrificeAbility, ~player);
+    let field =
+      List.filter((c: Card.card) => c.id !== card.id, player.field);
+    let sacrifice = [card, ...state.sacrifice];
+    ReasonReact.Update({
+      ...state,
+      sacrifice,
+      players: {
+        ...players,
+        field,
+      },
+    });
   | _ => ReasonReact.NoUpdate
   };
