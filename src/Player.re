@@ -27,6 +27,7 @@ let make =
       ~onClickAllyAbility=(_card: Card.card, _player: player) => (),
       ~onClickSacrificeAbility=(_card: Card.card, _player: player) => (),
       ~onChangeStat,
+      ~me: bool,
       _children,
     ) => {
   let valueFromEvent = evt =>
@@ -47,32 +48,50 @@ let make =
     ...component,
     render: _self =>
       <div className="Player">
-        (name |> ReasonReact.string)
-        <br />
-        ("Health: " |> ReasonReact.string)
-        <input
-          _type="number"
-          value=(string_of_int(health))
-          name="health"
-          onChange
-        />
-        <br />
-        ("Coins: " |> ReasonReact.string)
-        <input
-          _type="number"
-          value=(string_of_int(coins))
-          name="coins"
-          onChange
-        />
-        <br />
-        ("Combat: " |> ReasonReact.string)
-        <input
-          _type="number"
-          value=(string_of_int(combat))
-          name="combat"
-          onChange
-        />
+        (
+          ! me ?
+            <Cards
+              cards=field
+              title="Field"
+              onClick=onClickField
+              onClickPrimaryAbility
+              onClickAllyAbility
+              onClickSacrificeAbility
+              onMouseOver=onMouseOverCard
+            /> :
+            ReasonReact.null
+        )
         <div className="Decks">
+          <div className="stats">
+            <h4> (name |> ReasonReact.string) </h4>
+            <div>
+              ("Health: " |> ReasonReact.string)
+              <input
+                _type="number"
+                value=(string_of_int(health))
+                name="health"
+                onChange
+              />
+            </div>
+            <div>
+              ("Coins: " |> ReasonReact.string)
+              <input
+                _type="number"
+                value=(string_of_int(coins))
+                name="coins"
+                onChange
+              />
+            </div>
+            <div>
+              ("Combat: " |> ReasonReact.string)
+              <input
+                _type="number"
+                name="combat"
+                value=(string_of_int(combat))
+                onChange
+              />
+            </div>
+          </div>
           <Deck
             title=("Deck (" ++ (deck |> List.length |> string_of_int) ++ ")")
             deck
@@ -85,22 +104,26 @@ let make =
             deck=discard
             faceUp=true
           />
+          <Cards
+            cards=hand
+            title="Hand"
+            onClick=onClickHand
+            onMouseOver=onMouseOverCard
+          />
         </div>
-        <Cards
-          cards=field
-          title="Field"
-          onClick=onClickField
-          onClickPrimaryAbility
-          onClickAllyAbility
-          onClickSacrificeAbility
-          onMouseOver=onMouseOverCard
-        />
-        <Cards
-          cards=hand
-          title="Hand"
-          onClick=onClickHand
-          onMouseOver=onMouseOverCard
-        />
+        (
+          me ?
+            <Cards
+              cards=field
+              title="Field"
+              onClick=onClickField
+              onClickPrimaryAbility
+              onClickAllyAbility
+              onClickSacrificeAbility
+              onMouseOver=onMouseOverCard
+            /> :
+            ReasonReact.null
+        )
       </div>,
   };
 };

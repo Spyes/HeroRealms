@@ -62,58 +62,7 @@ let make = _children => {
         </div>
         <Player
           player
-          onClickInHand=(
-            (~card: Card.card, ~player: Player.player) =>
-              self.send(State.ClickCardInHand(card, player.id))
-          )
-          onClickInField=(
-            (~card: Card.card, ~player: Player.player) =>
-              self.send(State.ClickCardInField(card, player.id))
-          )
-          onMouseOverCard=(
-            (card: Card.card) => self.send(State.FocusCard(card))
-          )
-          onChangeStat=(
-            (~key: string, ~value: string, ~player: Player.player) =>
-              self.send(State.SetStat(key, value, player.id))
-          )
-          onClickDeck=(
-            (~player: Player.player) =>
-              self.send(State.DrawHand(player.id, 1))
-          )
-          onClickPrimaryAbility=(
-            (card: Card.card, player: Player.player) =>
-              self.send(State.PlayPrimaryAbility(card, player.id))
-          )
-          onClickAllyAbility=(
-            (card: Card.card, player: Player.player) =>
-              self.send(State.PlayAllyAbility(card, player.id))
-          )
-          onClickSacrificeAbility=(
-            (card: Card.card, player: Player.player) =>
-              self.send(State.PlaySacrificeAbility(card, player.id))
-          )
-        />
-        <div className="action-btns">
-          <button
-            onClick=(
-              _event => self.send(State.PrepareChampions(secondPlayer.id))
-            )>
-            ("Prepare" |> ReasonReact.string)
-          </button>
-          <button
-            onClick=(
-              _event => self.send(State.CleanupField(secondPlayer.id))
-            )>
-            ("Clean-up" |> ReasonReact.string)
-          </button>
-          <button
-            onClick=(_event => self.send(State.DrawHand(secondPlayer.id, 5)))>
-            ("Draw Hand" |> ReasonReact.string)
-          </button>
-        </div>
-        <Player
-          player=secondPlayer
+          me=true
           onClickInHand=(
             (~card: Card.card, ~player: Player.player) =>
               self.send(State.ClickCardInHand(card, player.id))
@@ -168,6 +117,59 @@ let make = _children => {
             onClick=(card => self.send(State.ClickMarketCard(card, me)))
           />
         </div>
+        <div className="action-btns">
+          <button
+            onClick=(
+              _event => self.send(State.PrepareChampions(secondPlayer.id))
+            )>
+            ("Prepare" |> ReasonReact.string)
+          </button>
+          <button
+            onClick=(
+              _event => self.send(State.CleanupField(secondPlayer.id))
+            )>
+            ("Clean-up" |> ReasonReact.string)
+          </button>
+          <button
+            onClick=(_event => self.send(State.DrawHand(secondPlayer.id, 5)))>
+            ("Draw Hand" |> ReasonReact.string)
+          </button>
+        </div>
+        <Player
+          player=secondPlayer
+          me=false
+          onClickInHand=(
+            (~card: Card.card, ~player: Player.player) =>
+              self.send(State.ClickCardInHand(card, player.id))
+          )
+          onClickInField=(
+            (~card: Card.card, ~player: Player.player) =>
+              self.send(State.ClickCardInField(card, player.id))
+          )
+          onMouseOverCard=(
+            (card: Card.card) => self.send(State.FocusCard(card))
+          )
+          onChangeStat=(
+            (~key: string, ~value: string, ~player: Player.player) =>
+              self.send(State.SetStat(key, value, player.id))
+          )
+          onClickDeck=(
+            (~player: Player.player) =>
+              self.send(State.DrawHand(player.id, 1))
+          )
+          onClickPrimaryAbility=(
+            (card: Card.card, player: Player.player) =>
+              self.send(State.PlayPrimaryAbility(card, player.id))
+          )
+          onClickAllyAbility=(
+            (card: Card.card, player: Player.player) =>
+              self.send(State.PlayAllyAbility(card, player.id))
+          )
+          onClickSacrificeAbility=(
+            (card: Card.card, player: Player.player) =>
+              self.send(State.PlaySacrificeAbility(card, player.id))
+          )
+        />
       </div>
       focusedCardElement
     </div>;

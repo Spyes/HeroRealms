@@ -136,22 +136,21 @@ let reducer = (action: action, state: state) =>
           state.fireGems;
       ReasonReact.Update({...state, players, fireGems});
     }
-  /*| ClickMarketCard((card: Card.card), (playerId: Player.id)) =>
+  | ClickMarketCard((card: Card.card), (playerId: Player.id)) =>
     let players =
       List.map(
         (player: Player.player) =>
           switch (player.id === playerId) {
           | false => player
-          | true =>
-            let (player, fromMarket) =
-              Util.takeFromMarket(~card, ~market=state.market, ~player);
-            let (market, deck) =
-              Util.drawFromDeck(~market=fromMarket, ~deck=state.deck);
-            player;
+          | true => Util.buyCard(~card, ~player)
           },
         state.players,
       );
-    ReasonReact.Update({...state, market, players, deck});*/
+    let newMarket =
+      List.filter((c: Card.card) => c.id !== card.id, state.market);
+    let (market, deck) =
+      Util.drawFromDeck(~market=newMarket, ~deck=state.deck);
+    ReasonReact.Update({...state, market, players, deck});
   | ClickCardInHand((card: Card.card), (playerId: Player.id)) =>
     let players =
       List.map(
