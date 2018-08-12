@@ -177,7 +177,8 @@ let fireGems = [
 ];
 
 let players = {
-  Player.name: "Lewis",
+  Player.id: "1",
+  name: "Lewis",
   hand: [],
   deck: [
     {
