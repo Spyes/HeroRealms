@@ -1,7 +1,9 @@
 let component = ReasonReact.statelessComponent("Player");
 
+type id = string;
+
 type player = {
-  id: string,
+  id,
   name: string,
   hand: Cards.cards,
   deck: Cards.cards,
@@ -10,6 +12,8 @@ type player = {
   coins: int,
   combat: int,
   health: int,
+  playedAllyAbility: list(string),
+  playedPrimaryAbility: list(string),
 };
 
 let make =
