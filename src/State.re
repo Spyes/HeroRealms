@@ -113,29 +113,29 @@ let reducer = (action: action, state: state) =>
       ReasonReact.Update({...state, market, deck});
     }
   | ClickFireGems((playerId: Player.id)) =>
-    let card: Card.card = List.hd(state.fireGems);
-    let playersTuples: list((Player.player, option(Cards.cards))) =
-      List.map(
-        (player: Player.player) =>
-          switch (player.id === playerId) {
-          | false => (player, None)
-          | true =>
-            switch (List.length(state.fireGems)) {
-            | 0 => (player, None)
-            | _ =>
+    switch (List.length(state.fireGems)) {
+    | 0 => ReasonReact.NoUpdate
+    | _ =>
+      let card: Card.card = List.hd(state.fireGems);
+      let gainedCard = ref(false);
+      let players =
+        List.map(
+          (player: Player.player) =>
+            switch (player.id === playerId) {
+            | false => player
+            | true =>
               let player = Util.buyCard(~card, ~player);
-              let fireGems: Cards.cards =
-                List.filter(
-                  (c: Card.card) => c.id !== card.id,
-                  state.fireGems,
-                );
-              (player, Some(fireGems));
-            }
-          },
-        state.players,
-      );
-    Js.log(playersTuples);
-    ReasonReact.NoUpdate;
+              gainedCard := true;
+              player;
+            },
+          state.players,
+        );
+      let fireGems: Cards.cards =
+        gainedCard^ === true ?
+          List.filter((c: Card.card) => c.id !== card.id, state.fireGems) :
+          state.fireGems;
+      ReasonReact.Update({...state, players, fireGems});
+    }
   /*| ClickMarketCard((card: Card.card), (playerId: Player.id)) =>
     let players =
       List.map(
