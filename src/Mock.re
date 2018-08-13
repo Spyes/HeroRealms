@@ -177,8 +177,11 @@ let fireGems = [
 ];
 
 let players = {
-  Player.name: "Lewis",
+  Player.id: "1",
+  name: "Lewis",
   hand: [],
+  playedAllyAbility: [],
+  playedPrimaryAbility: [],
   deck: [
     {
       Card.id: "4",
@@ -311,7 +314,34 @@ let players = {
       expended: false,
     },
   ],
-  field: [],
+  field: [
+    {
+      Card.id: "211",
+      name: "Taxation",
+      cost: Some(1),
+      cardType: Card.Action,
+      defense: None,
+      faction: Some(Card.Imperial),
+      primaryAbility: Some(Card.AddCoins(2)),
+      allyAbility: Some(Card.AddHealth(6)),
+      sacrificeAbility: None,
+      image: "https://www.herorealms.com/wp-content/uploads/2017/09/BAS-EN-017-taxation.jpg",
+      expended: false,
+    },
+    {
+      Card.id: "111",
+      name: "Tithe Priest",
+      cost: Some(2),
+      cardType: Card.Champion,
+      defense: None,
+      faction: Some(Card.Imperial),
+      primaryAbility: None,
+      allyAbility: None,
+      sacrificeAbility: None,
+      image: "https://www.herorealms.com/wp-content/uploads/2017/09/BAS-EN-015-tithe-priest.jpg",
+      expended: false,
+    },
+  ],
   discard: [],
   combat: 0,
   health: 50,

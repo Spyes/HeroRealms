@@ -12,28 +12,26 @@ let drawFromDeck =
     } :
     (market, deck);
 
-let takeFromMarket =
-    (~card: Card.card, ~market: Cards.cards, ~player: Player.player)
-    : (Player.player, Cards.cards) =>
+let gainCard = (~card: Card.card, ~player: Player.player) : Player.player => {
+  ...player,
+  discard: [card, ...player.discard],
+};
+
+let buyCard =
+    (~card: Card.card, ~player: Player.player)
+    : (Player.player, bool) =>
   switch (card.cost) {
   | Some(cost) =>
     player.coins >= cost ?
       {
-        let player = {
-          ...player,
-          discard: [card, ...player.discard],
-          coins: player.coins - cost,
-        };
-        let isEqual = (c: Card.card) => c.id !== card.id;
-        let market = List.filter(isEqual, market);
-        (player, market);
+        let player = gainCard(~card, ~player);
+        let newPlayer = {...player, coins: player.coins - cost};
+        (newPlayer, true);
       } :
-      (player, market)
+      (player, false)
   | None =>
-    let player = {...player, discard: [card, ...player.discard]};
-    let noIt = (c: Card.card) => c.id !== card.id;
-    let market = List.filter(noIt, market);
-    (player, market);
+    let player = gainCard(~card, ~player);
+    (player, true);
   };
 
 let clearField = (~field: Cards.cards) : (Cards.cards, Cards.cards) => {
