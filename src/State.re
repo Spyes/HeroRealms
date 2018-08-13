@@ -124,8 +124,8 @@ let reducer = (action: action, state: state) =>
             switch (player.id === playerId) {
             | false => player
             | true =>
-              let player = Util.buyCard(~card, ~player);
-              gainedCard := true;
+              let (player, bought) = Util.buyCard(~card, ~player);
+              gainedCard := bought;
               player;
             },
           state.players,
@@ -137,20 +137,28 @@ let reducer = (action: action, state: state) =>
       ReasonReact.Update({...state, players, fireGems});
     }
   | ClickMarketCard((card: Card.card), (playerId: Player.id)) =>
+    let gainedCard = ref(false);
     let players =
       List.map(
         (player: Player.player) =>
           switch (player.id === playerId) {
           | false => player
-          | true => Util.buyCard(~card, ~player)
+          | true =>
+            let (player, bought) = Util.buyCard(~card, ~player);
+            gainedCard := bought;
+            player;
           },
         state.players,
       );
-    let newMarket =
-      List.filter((c: Card.card) => c.id !== card.id, state.market);
-    let (market, deck) =
-      Util.drawFromDeck(~market=newMarket, ~deck=state.deck);
-    ReasonReact.Update({...state, market, players, deck});
+    switch (gainedCard^) {
+    | false => ReasonReact.NoUpdate
+    | true =>
+      let newMarket: Cards.cards =
+        List.filter((c: Card.card) => c.id !== card.id, state.market);
+      let (market, deck) =
+        Util.drawFromDeck(~market=newMarket, ~deck=state.deck);
+      ReasonReact.Update({...state, market, players, deck});
+    };
   | ClickCardInHand((card: Card.card), (playerId: Player.id)) =>
     let players =
       List.map(

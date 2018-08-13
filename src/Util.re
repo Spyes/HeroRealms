@@ -17,16 +17,21 @@ let gainCard = (~card: Card.card, ~player: Player.player) : Player.player => {
   discard: [card, ...player.discard],
 };
 
-let buyCard = (~card: Card.card, ~player: Player.player) : Player.player =>
+let buyCard =
+    (~card: Card.card, ~player: Player.player)
+    : (Player.player, bool) =>
   switch (card.cost) {
   | Some(cost) =>
     player.coins >= cost ?
       {
         let player = gainCard(~card, ~player);
-        {...player, coins: player.coins - cost};
+        let newPlayer = {...player, coins: player.coins - cost};
+        (newPlayer, true);
       } :
-      player
-  | None => gainCard(~card, ~player)
+      (player, false)
+  | None =>
+    let player = gainCard(~card, ~player);
+    (player, true);
   };
 
 let clearField = (~field: Cards.cards) : (Cards.cards, Cards.cards) => {
