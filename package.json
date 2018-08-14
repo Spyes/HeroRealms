@@ -5,6 +5,7 @@
     "build": "bsb -make-world",
     "start": "bsb -make-world -w",
     "clean": "bsb -clean-world",
+    "run": "node src/GameServer.bs.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "webpack": "webpack -w",
     "webpack:production": "NODE_ENV=production webpack"
@@ -15,9 +16,11 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "express": "^4.16.3",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
-    "reason-react": ">=0.4.0"
+    "reason-react": ">=0.4.0",
+    "socket.io": "^1.4.8"
   },
   "devDependencies": {
     "bs-platform": "^4.0.3",
